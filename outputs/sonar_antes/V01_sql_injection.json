@@ -1,0 +1,97 @@
+{
+  "project_key": "POC_V01_sql_injection_ANTES",
+  "issues_todas": {
+    "total": 1,
+    "p": 1,
+    "ps": 500,
+    "paging": {
+      "pageIndex": 1,
+      "pageSize": 500,
+      "total": 1
+    },
+    "effortTotal": 5,
+    "issues": [
+      {
+        "key": "d4b038f2-f83e-40e5-89b3-bc6e32a78b0a",
+        "rule": "python:S6965",
+        "severity": "MAJOR",
+        "component": "POC_V01_sql_injection_ANTES:V01_sql_injection.py",
+        "project": "POC_V01_sql_injection_ANTES",
+        "line": 31,
+        "hash": "0570630604a28e120b716ad043208adb",
+        "textRange": {
+          "startLine": 31,
+          "endLine": 31,
+          "startOffset": 0,
+          "endOffset": 32
+        },
+        "flows": [],
+        "status": "OPEN",
+        "message": "Specify the HTTP methods this route should accept.",
+        "effort": "5min",
+        "debt": "5min",
+        "author": "",
+        "tags": [
+          "flask"
+        ],
+        "creationDate": "2026-06-17T06:21:00+0000",
+        "updateDate": "2026-06-17T06:21:00+0000",
+        "type": "CODE_SMELL",
+        "scope": "MAIN",
+        "quickFixAvailable": false,
+        "messageFormattings": [],
+        "codeVariants": [],
+        "cleanCodeAttribute": "CONVENTIONAL",
+        "cleanCodeAttributeCategory": "CONSISTENT",
+        "impacts": [
+          {
+            "softwareQuality": "MAINTAINABILITY",
+            "severity": "MEDIUM"
+          }
+        ],
+        "issueStatus": "OPEN",
+        "prioritizedRule": false,
+        "fromSonarQubeUpdate": false,
+        "internalTags": [],
+        "linkedTicketStatus": "NOT_LINKED"
+      }
+    ],
+    "components": [
+      {
+        "key": "POC_V01_sql_injection_ANTES",
+        "enabled": true,
+        "qualifier": "TRK",
+        "name": "POC_V01_sql_injection_ANTES",
+        "longName": "POC_V01_sql_injection_ANTES"
+      },
+      {
+        "key": "POC_V01_sql_injection_ANTES:V01_sql_injection.py",
+        "enabled": true,
+        "qualifier": "FIL",
+        "name": "V01_sql_injection.py",
+        "longName": "V01_sql_injection.py",
+        "path": "V01_sql_injection.py"
+      }
+    ],
+    "facets": []
+  },
+  "vulnerabilidades": {
+    "total": 0,
+    "p": 1,
+    "ps": 500,
+    "paging": {
+      "pageIndex": 1,
+      "pageSize": 500,
+      "total": 0
+    },
+    "effortTotal": 0,
+    "issues": [],
+    "components": [],
+    "facets": []
+  },
+  "hotspots": {
+    "erro": "Permissão insuficiente para consultar Security Hotspots.",
+    "status_code": 403,
+    "hotspots": []
+  }
+}

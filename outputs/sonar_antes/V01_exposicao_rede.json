@@ -1,0 +1,168 @@
+{
+  "project_key": "POC_V01_exposicao_rede_ANTES",
+  "issues_todas": {
+    "total": 1,
+    "p": 1,
+    "ps": 500,
+    "paging": {
+      "pageIndex": 1,
+      "pageSize": 500,
+      "total": 1
+    },
+    "effortTotal": 5,
+    "issues": [
+      {
+        "key": "df20ba4a-90a3-40b4-a577-bc1d0e330c96",
+        "rule": "python:S8392",
+        "severity": "BLOCKER",
+        "component": "POC_V01_exposicao_rede_ANTES:V01_exposicao_rede.py",
+        "project": "POC_V01_exposicao_rede_ANTES",
+        "line": 12,
+        "hash": "cfb7fd2dc58975f6c9e5acb3e0fd8059",
+        "textRange": {
+          "startLine": 12,
+          "endLine": 12,
+          "startOffset": 4,
+          "endOffset": 11
+        },
+        "flows": [],
+        "status": "OPEN",
+        "message": "Avoid binding the application to all network interfaces.",
+        "effort": "5min",
+        "debt": "5min",
+        "author": "",
+        "tags": [
+          "fastapi",
+          "least-privilege",
+          "uvicorn",
+          "flask",
+          "deployment",
+          "network"
+        ],
+        "creationDate": "2026-06-17T07:03:41+0000",
+        "updateDate": "2026-06-17T07:03:41+0000",
+        "type": "VULNERABILITY",
+        "scope": "MAIN",
+        "quickFixAvailable": false,
+        "messageFormattings": [],
+        "codeVariants": [],
+        "cleanCodeAttribute": "CONVENTIONAL",
+        "cleanCodeAttributeCategory": "CONSISTENT",
+        "impacts": [
+          {
+            "softwareQuality": "SECURITY",
+            "severity": "BLOCKER"
+          }
+        ],
+        "issueStatus": "OPEN",
+        "prioritizedRule": false,
+        "fromSonarQubeUpdate": false,
+        "internalTags": [],
+        "linkedTicketStatus": "NOT_LINKED"
+      }
+    ],
+    "components": [
+      {
+        "key": "POC_V01_exposicao_rede_ANTES:V01_exposicao_rede.py",
+        "enabled": true,
+        "qualifier": "FIL",
+        "name": "V01_exposicao_rede.py",
+        "longName": "V01_exposicao_rede.py",
+        "path": "V01_exposicao_rede.py"
+      },
+      {
+        "key": "POC_V01_exposicao_rede_ANTES",
+        "enabled": true,
+        "qualifier": "TRK",
+        "name": "POC_V01_exposicao_rede_ANTES",
+        "longName": "POC_V01_exposicao_rede_ANTES"
+      }
+    ],
+    "facets": []
+  },
+  "vulnerabilidades": {
+    "total": 1,
+    "p": 1,
+    "ps": 500,
+    "paging": {
+      "pageIndex": 1,
+      "pageSize": 500,
+      "total": 1
+    },
+    "effortTotal": 5,
+    "issues": [
+      {
+        "key": "df20ba4a-90a3-40b4-a577-bc1d0e330c96",
+        "rule": "python:S8392",
+        "severity": "BLOCKER",
+        "component": "POC_V01_exposicao_rede_ANTES:V01_exposicao_rede.py",
+        "project": "POC_V01_exposicao_rede_ANTES",
+        "line": 12,
+        "hash": "cfb7fd2dc58975f6c9e5acb3e0fd8059",
+        "textRange": {
+          "startLine": 12,
+          "endLine": 12,
+          "startOffset": 4,
+          "endOffset": 11
+        },
+        "flows": [],
+        "status": "OPEN",
+        "message": "Avoid binding the application to all network interfaces.",
+        "effort": "5min",
+        "debt": "5min",
+        "author": "",
+        "tags": [
+          "fastapi",
+          "least-privilege",
+          "uvicorn",
+          "flask",
+          "deployment",
+          "network"
+        ],
+        "creationDate": "2026-06-17T07:03:41+0000",
+        "updateDate": "2026-06-17T07:03:41+0000",
+        "type": "VULNERABILITY",
+        "scope": "MAIN",
+        "quickFixAvailable": false,
+        "messageFormattings": [],
+        "codeVariants": [],
+        "cleanCodeAttribute": "CONVENTIONAL",
+        "cleanCodeAttributeCategory": "CONSISTENT",
+        "impacts": [
+          {
+            "softwareQuality": "SECURITY",
+            "severity": "BLOCKER"
+          }
+        ],
+        "issueStatus": "OPEN",
+        "prioritizedRule": false,
+        "fromSonarQubeUpdate": false,
+        "internalTags": [],
+        "linkedTicketStatus": "NOT_LINKED"
+      }
+    ],
+    "components": [
+      {
+        "key": "POC_V01_exposicao_rede_ANTES:V01_exposicao_rede.py",
+        "enabled": true,
+        "qualifier": "FIL",
+        "name": "V01_exposicao_rede.py",
+        "longName": "V01_exposicao_rede.py",
+        "path": "V01_exposicao_rede.py"
+      },
+      {
+        "key": "POC_V01_exposicao_rede_ANTES",
+        "enabled": true,
+        "qualifier": "TRK",
+        "name": "POC_V01_exposicao_rede_ANTES",
+        "longName": "POC_V01_exposicao_rede_ANTES"
+      }
+    ],
+    "facets": []
+  },
+  "hotspots": {
+    "erro": "Permissão insuficiente para consultar Security Hotspots.",
+    "status_code": 403,
+    "hotspots": []
+  }
+}
