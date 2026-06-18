@@ -1,4 +1,4 @@
-from vulneraveis import V02_idor_bola as app_idor
+from vulneraveis import V03_idor_bola as app_idor
 
 
 def test_usuario_vinculado_pode_acessar_documento():

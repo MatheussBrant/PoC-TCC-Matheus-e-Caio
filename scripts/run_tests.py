@@ -15,8 +15,12 @@ CASOS = {
         "test_file": ROOT / "testes" / "test_V01_sql_injection.py",
     },
     "V02": {
-        "module_name": "V02_idor_bola.py",
-        "test_file": ROOT / "testes" / "test_V02_idor_bola.py",
+        "module_name": "V02_sql_injection_complexa.py",
+        "test_file": ROOT / "testes" / "test_V02_sql_injection_complexa.py",
+    },
+    "V03": {
+        "module_name": "V03_idor_bola.py",
+        "test_file": ROOT / "testes" / "test_V03_idor_bola.py",
     },
 }
 
@@ -41,8 +45,10 @@ def executar_testes_codigo(caso_id: str, codigo_corrigido: Path) -> dict:
 
         modulo_destino = pacote_vulneraveis / caso["module_name"]
         teste_destino = pacote_testes / caso["test_file"].name
+        modulo_teste_destino = pacote_testes / caso["module_name"]
 
         shutil.copy(codigo_corrigido, modulo_destino)
+        shutil.copy(codigo_corrigido, modulo_teste_destino)
         shutil.copy(caso["test_file"], teste_destino)
 
         resultado = subprocess.run(

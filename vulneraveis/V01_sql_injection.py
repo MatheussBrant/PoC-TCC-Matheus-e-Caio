@@ -10,16 +10,11 @@ def obter_conexao():
     return sqlite3.connect(DATABASE)
 
 
-def montar_filtro(campo, valor):
-    return f"{campo} = '{valor}'"
-
-
-def buscar_registros(tabela, campo, valor):
+def buscar_documentos_por_aluno(aluno):
     conexao = obter_conexao()
     cursor = conexao.cursor()
 
-    filtro = montar_filtro(campo, valor)
-    query = f"SELECT * FROM {tabela} WHERE {filtro}"
+    query = f"SELECT * FROM documentos_tcc WHERE aluno = '{aluno}'"
 
     cursor.execute(query)
     resultados = cursor.fetchall()
@@ -30,10 +25,8 @@ def buscar_registros(tabela, campo, valor):
 
 @app.route("/documentos/buscar")
 def buscar_documentos():
-    campo = request.args.get("campo", "titulo")
-    valor = request.args.get("valor", "")
-    tabela = request.args.get("tabela", "documentos_tcc")
+    aluno = request.args.get("aluno", "")
 
-    resultados = buscar_registros(tabela, campo, valor)
+    resultados = buscar_documentos_por_aluno(aluno)
 
     return jsonify({"resultados": resultados})
