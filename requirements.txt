@@ -3,5 +3,4 @@ python-dotenv
 requests
 pytest
 flask
-werkzeug
 bandit
