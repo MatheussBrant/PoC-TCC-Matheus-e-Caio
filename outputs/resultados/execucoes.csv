@@ -1,0 +1,13 @@
+caso_id,vulnerabilidade,prompt,issue_sumiu,testes_passaram,correcao_adequada
+V01,sql_injection,P1_simples,true,true,true
+V01,sql_injection,P2_raciocinio_guiado,true,true,true
+V01,sql_injection,P3_sast,true,true,true
+V01,sql_injection,P4_contexto_sast,true,true,true
+V02,sql_injection_complexa,P1_simples,false,false,false
+V02,sql_injection_complexa,P2_raciocinio_guiado,false,false,false
+V02,sql_injection_complexa,P3_sast,true,false,false
+V02,sql_injection_complexa,P4_contexto_sast,true,true,true
+V03,idor_bola,P1_simples,false,false,false
+V03,idor_bola,P2_raciocinio_guiado,false,true,false
+V03,idor_bola,P3_sast,false,false,false
+V03,idor_bola,P4_contexto_sast,false,true,false
