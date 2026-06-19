@@ -5,24 +5,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-
-ROOT = Path(__file__).resolve().parents[1]
-
-
-CASOS = {
-    "V01": {
-        "module_name": "V01_sql_injection.py",
-        "test_file": ROOT / "testes" / "test_V01_sql_injection.py",
-    },
-    "V02": {
-        "module_name": "V02_sql_injection_complexa.py",
-        "test_file": ROOT / "testes" / "test_V02_sql_injection_complexa.py",
-    },
-    "V03": {
-        "module_name": "V03_idor_bola.py",
-        "test_file": ROOT / "testes" / "test_V03_idor_bola.py",
-    },
-}
+from artifact_naming import CASOS, obter_caminho_teste
 
 
 def executar_testes_codigo(caso_id: str, codigo_corrigido: Path) -> dict:
@@ -31,6 +14,7 @@ def executar_testes_codigo(caso_id: str, codigo_corrigido: Path) -> dict:
     """
 
     caso = CASOS[caso_id]
+    test_file = obter_caminho_teste(caso_id)
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
@@ -43,13 +27,13 @@ def executar_testes_codigo(caso_id: str, codigo_corrigido: Path) -> dict:
 
         (pacote_vulneraveis / "__init__.py").write_text("", encoding="utf-8")
 
-        modulo_destino = pacote_vulneraveis / caso["module_name"]
-        teste_destino = pacote_testes / caso["test_file"].name
-        modulo_teste_destino = pacote_testes / caso["module_name"]
+        modulo_destino = pacote_vulneraveis / caso["arquivo"]
+        teste_destino = pacote_testes / test_file.name
+        modulo_teste_destino = pacote_testes / caso["arquivo"]
 
         shutil.copy(codigo_corrigido, modulo_destino)
         shutil.copy(codigo_corrigido, modulo_teste_destino)
-        shutil.copy(caso["test_file"], teste_destino)
+        shutil.copy(test_file, teste_destino)
 
         resultado = subprocess.run(
             [sys.executable, "-m", "pytest", str(teste_destino), "-q"],

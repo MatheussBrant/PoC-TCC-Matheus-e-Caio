@@ -2,18 +2,9 @@ import csv
 import json
 from pathlib import Path
 
+from artifact_naming import CAMPOS_CSV_RESULTADOS
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-CAMPOS_CSV_RESULTADOS = [
-    "caso_id",
-    "vulnerabilidade",
-    "prompt",
-    "issue_sumiu",
-    "testes_passaram",
-    "correcao_adequada",
-]
 
 
 def formatar_valor_csv(valor):

@@ -3,6 +3,16 @@ import json
 import re
 from pathlib import Path
 
+from artifact_naming import (
+    CAMPOS_CSV_RESULTADOS,
+    CASOS,
+    EXECUCAO_PADRAO,
+    ROOT,
+    gerar_caminho_output,
+    obter_caminho_codigo_vulneravel,
+    obter_caminho_contexto,
+    obter_prompt_curto,
+)
 from openai_client import chamar_openai
 from prompt_builder import (
     montar_prompt_simples,
@@ -16,44 +26,6 @@ from bandit_client import (
     simplificar_primeira_issue_bandit,
 )
 from run_tests import executar_testes_codigo, salvar_resultado_teste
-
-
-ROOT = Path(__file__).resolve().parents[1]
-
-
-CAMPOS_CSV_RESULTADOS = [
-    "caso_id",
-    "vulnerabilidade",
-    "prompt",
-    "issue_sumiu",
-    "testes_passaram",
-    "correcao_adequada",
-]
-
-
-CASOS = [
-    {
-        "id": "V01",
-        "nome": "sql_injection",
-        "arquivo_codigo": ROOT / "vulneraveis" / "V01_sql_injection.py",
-        "arquivo_contexto": ROOT / "contextos" / "V01_sql_injection_contexto.md",
-        "module_name": "V01_sql_injection.py",
-    },
-    {
-        "id": "V02",
-        "nome": "sql_injection_complexa",
-        "arquivo_codigo": ROOT / "vulneraveis" / "V02_sql_injection_complexa.py",
-        "arquivo_contexto": ROOT / "contextos" / "V02_sql_injection_complexa_contexto.md",
-        "module_name": "V02_sql_injection_complexa.py",
-    },
-    {
-        "id": "V03",
-        "nome": "idor_bola",
-        "arquivo_codigo": ROOT / "vulneraveis" / "V03_idor_bola.py",
-        "arquivo_contexto": ROOT / "contextos" / "V03_idor_bola_contexto.md",
-        "module_name": "V03_idor_bola.py",
-    },
-]
 
 
 def extrair_json(texto: str) -> tuple[dict, bool]:
@@ -100,22 +72,30 @@ def limpar_codigo(codigo: str) -> str:
     return codigo
 
 
-def salvar_codigo_corrigido(caso: dict, prompt_id: str, resposta_texto: str) -> Path:
+def salvar_codigo_corrigido(
+    caso_id: str,
+    prompt_id: str,
+    execucao: str,
+    resposta_texto: str,
+):
     """
     Extrai o código corrigido da resposta da LLM e salva apenas o arquivo Python.
     """
-
-    pasta_codigos = ROOT / "outputs" / "codigos_corrigidos"
-
-    pasta_codigos.mkdir(parents=True, exist_ok=True)
-
-    nome_base = f"{caso['id']}_{caso['nome']}_{prompt_id}"
 
     resposta_json, _ = extrair_json(resposta_texto)
 
     codigo_corrigido = limpar_codigo(resposta_json.get("codigo_corrigido", ""))
 
-    codigo_path = pasta_codigos / f"{nome_base}.py"
+    codigo_path = gerar_caminho_output(
+        caso_id=caso_id,
+        prompt_id=prompt_id,
+        execucao=execucao,
+        artefato="codigo",
+        extensao="py",
+        pasta="codigos_corrigidos",
+    )
+
+    codigo_path.parent.mkdir(parents=True, exist_ok=True)
 
     codigo_path.write_text(
         codigo_corrigido,
@@ -152,37 +132,43 @@ def formatar_valor_csv(valor):
 
 def main():
     resultados = []
+    execucao = EXECUCAO_PADRAO
 
-    for caso in CASOS:
-        print(f"\n=== Analisando caso {caso['id']} - {caso['nome']} ===")
+    for caso_id, caso in CASOS.items():
+        print(f"\n=== Analisando caso {caso_id} - {caso['nome']} ===")
 
-        contexto = caso["arquivo_contexto"].read_text(encoding="utf-8")
-        codigo_vulneravel = caso["arquivo_codigo"].read_text(encoding="utf-8")
+        arquivo_codigo = obter_caminho_codigo_vulneravel(caso_id)
+        arquivo_contexto = obter_caminho_contexto(caso_id)
 
-        bandit_antes_path = (
-            ROOT
-            / "outputs"
-            / "bandit_antes"
-            / f"{caso['id']}_{caso['nome']}.json"
+        contexto = arquivo_contexto.read_text(encoding="utf-8")
+        codigo_vulneravel = arquivo_codigo.read_text(encoding="utf-8")
+
+        bandit_antes_path = gerar_caminho_output(
+            caso_id=caso_id,
+            prompt_id="BASE",
+            execucao=execucao,
+            artefato="sast_antes",
+            extensao="json",
+            pasta="bandit_antes",
         )
 
         print("Rodando Bandit antes da correção...")
 
         resultado_bandit_antes = executar_bandit(
-            source_file=caso["arquivo_codigo"],
+            source_file=arquivo_codigo,
             output_path=bandit_antes_path
         )
 
         issue_sast = simplificar_primeira_issue_bandit(
             resultado_bandit=resultado_bandit_antes,
-            arquivo=caso["module_name"]
+            arquivo=caso["arquivo"]
         )
 
         qtd_antes = contar_issues_bandit(resultado_bandit_antes)
 
         teste_vulneravel_resultado = executar_testes_codigo(
-            caso_id=caso["id"],
-            codigo_corrigido=caso["arquivo_codigo"]
+            caso_id=caso_id,
+            codigo_corrigido=arquivo_codigo
         )
 
         testes_detectaram_falha = not teste_vulneravel_resultado["passou"]
@@ -194,22 +180,27 @@ def main():
             "P4_contexto_sast": montar_prompt_contexto_sast(codigo_vulneravel, issue_sast, contexto),
         }
 
-        for prompt_id, prompt in prompts.items():
-            print(f"\nExecutando {caso['id']} - {prompt_id}")
+        for prompt_original, prompt in prompts.items():
+            prompt_id = obter_prompt_curto(prompt_original)
+
+            print(f"\nExecutando {caso_id} - {prompt_id} ({prompt_original})")
 
             resposta_texto = chamar_openai(prompt)
 
             codigo_corrigido_path = salvar_codigo_corrigido(
-                caso=caso,
+                caso_id=caso_id,
                 prompt_id=prompt_id,
+                execucao=execucao,
                 resposta_texto=resposta_texto
             )
 
-            bandit_depois_path = (
-                ROOT
-                / "outputs"
-                / "bandit_depois"
-                / f"{caso['id']}_{caso['nome']}_{prompt_id}.json"
+            bandit_depois_path = gerar_caminho_output(
+                caso_id=caso_id,
+                prompt_id=prompt_id,
+                execucao=execucao,
+                artefato="sast_depois",
+                extensao="json",
+                pasta="bandit_depois",
             )
 
             print("Rodando Bandit depois da correção...")
@@ -240,15 +231,17 @@ def main():
             print("Executando testes automatizados...")
 
             teste_resultado = executar_testes_codigo(
-                caso_id=caso["id"],
+                caso_id=caso_id,
                 codigo_corrigido=codigo_corrigido_path
             )
 
-            teste_path = (
-                ROOT
-                / "outputs"
-                / "testes"
-                / f"{caso['id']}_{caso['nome']}_{prompt_id}_testes.json"
+            teste_path = gerar_caminho_output(
+                caso_id=caso_id,
+                prompt_id=prompt_id,
+                execucao=execucao,
+                artefato="testes",
+                extensao="json",
+                pasta="testes",
             )
 
             salvar_resultado_teste(
@@ -260,21 +253,44 @@ def main():
             testes_passaram = teste_resultado["passou"]
             correcao_adequada = issue_sumiu and testes_passaram
 
-            resultados.append({
-                "caso_id": caso["id"],
-                "vulnerabilidade": caso["nome"],
+            resultado_path = gerar_caminho_output(
+                caso_id=caso_id,
+                prompt_id=prompt_id,
+                execucao=execucao,
+                artefato="resultado",
+                extensao="json",
+                pasta="resultados",
+            )
+
+            resultado = {
+                "caso_id": caso_id,
+                "nome_caso": caso["nome"],
+                "owasp": caso["owasp"],
+                "vulnerabilidade": caso["vuln"],
                 "prompt": prompt_id,
+                "prompt_original": prompt_original,
+                "execucao": execucao,
                 "bandit_antes_qtd": qtd_antes,
                 "bandit_depois_qtd": qtd_depois,
                 "testes_detectaram_falha": testes_detectaram_falha,
                 "issue_sumiu": issue_sumiu,
                 "testes_passaram": testes_passaram,
                 "correcao_adequada": correcao_adequada,
-                "codigo_corrigido_path": str(codigo_corrigido_path),
-                "bandit_antes_path": str(bandit_antes_path),
-                "bandit_depois_path": str(bandit_depois_path),
-                "teste_path": str(teste_path),
-            })
+                "arquivo_codigo_corrigido": str(codigo_corrigido_path),
+                "arquivo_sast_antes": str(bandit_antes_path),
+                "arquivo_sast_depois": str(bandit_depois_path),
+                "arquivo_testes": str(teste_path),
+                "arquivo_resultado": str(resultado_path),
+            }
+
+            resultado_path.parent.mkdir(parents=True, exist_ok=True)
+
+            resultado_path.write_text(
+                json.dumps(resultado, ensure_ascii=False, indent=2),
+                encoding="utf-8"
+            )
+
+            resultados.append(resultado)
 
             print(f"Correção adequada? {correcao_adequada}")
 
