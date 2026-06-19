@@ -47,9 +47,20 @@ CAMPOS_CSV_RESULTADOS = [
     "vulnerabilidade",
     "prompt",
     "execucao",
+    "arquivo_sast_antes",
+    "arquivo_sast_depois",
+    "arquivo_testes",
+    "arquivo_codigo_corrigido",
+    "issue_detectada_antes",
     "issue_sumiu",
     "testes_passaram",
+    "novas_issues_introduzidas",
+    "sem_novas_issues",
+    "S_i",
+    "T_i",
+    "N_i",
     "correcao_adequada",
+    "avaliacao_por_testes",
 ]
 
 

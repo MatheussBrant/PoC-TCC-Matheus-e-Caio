@@ -1,10 +1,7 @@
-import csv
 import json
 import re
-from pathlib import Path
 
 from artifact_naming import (
-    CAMPOS_CSV_RESULTADOS,
     CASOS,
     EXECUCAO_PADRAO,
     ROOT,
@@ -25,6 +22,7 @@ from bandit_client import (
     contar_issues_bandit,
     simplificar_primeira_issue_bandit,
 )
+from calculate_metrics import avaliar_tentativa, gerar_arquivos_metricas
 from run_tests import executar_testes_codigo, salvar_resultado_teste
 
 
@@ -103,31 +101,6 @@ def salvar_codigo_corrigido(
     )
 
     return codigo_path
-
-
-def salvar_csv_resultados(resultados: list[dict], output_path: Path) -> None:
-    """
-    Salva uma tabela resumida das execuções com as principais métricas booleanas.
-    """
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with output_path.open("w", newline="", encoding="utf-8") as arquivo_csv:
-        writer = csv.DictWriter(arquivo_csv, fieldnames=CAMPOS_CSV_RESULTADOS)
-        writer.writeheader()
-
-        for resultado in resultados:
-            writer.writerow({
-                campo: formatar_valor_csv(resultado.get(campo, ""))
-                for campo in CAMPOS_CSV_RESULTADOS
-            })
-
-
-def formatar_valor_csv(valor):
-    if isinstance(valor, bool):
-        return str(valor).lower()
-
-    return valor
 
 
 def main():
@@ -249,10 +222,6 @@ def main():
                 output_path=teste_path
             )
 
-            issue_sumiu = qtd_antes > 0 and qtd_depois == 0
-            testes_passaram = teste_resultado["passou"]
-            correcao_adequada = issue_sumiu and testes_passaram
-
             resultado_path = gerar_caminho_output(
                 caso_id=caso_id,
                 prompt_id=prompt_id,
@@ -273,15 +242,14 @@ def main():
                 "bandit_antes_qtd": qtd_antes,
                 "bandit_depois_qtd": qtd_depois,
                 "testes_detectaram_falha": testes_detectaram_falha,
-                "issue_sumiu": issue_sumiu,
-                "testes_passaram": testes_passaram,
-                "correcao_adequada": correcao_adequada,
                 "arquivo_codigo_corrigido": str(codigo_corrigido_path),
                 "arquivo_sast_antes": str(bandit_antes_path),
                 "arquivo_sast_depois": str(bandit_depois_path),
                 "arquivo_testes": str(teste_path),
                 "arquivo_resultado": str(resultado_path),
             }
+
+            resultado = avaliar_tentativa(resultado)
 
             resultado_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -292,11 +260,9 @@ def main():
 
             resultados.append(resultado)
 
-            print(f"Correção adequada? {correcao_adequada}")
+            print(f"Correção adequada? {resultado['correcao_adequada']}")
 
     resultados_path = ROOT / "outputs" / "resultados" / "execucoes.json"
-    resultados_csv_path = ROOT / "outputs" / "resultados" / "execucoes.csv"
-
     resultados_path.parent.mkdir(parents=True, exist_ok=True)
 
     resultados_path.write_text(
@@ -304,10 +270,10 @@ def main():
         encoding="utf-8"
     )
 
-    salvar_csv_resultados(resultados, resultados_csv_path)
+    gerar_arquivos_metricas(resultados_path=resultados_path)
 
     print(f"\nResultados salvos em: {resultados_path}")
-    print(f"Resumo CSV salvo em: {resultados_csv_path}")
+    print(f"Resumo CSV salvo em: {ROOT / 'outputs' / 'resultados' / 'execucoes.csv'}")
 
 
 if __name__ == "__main__":

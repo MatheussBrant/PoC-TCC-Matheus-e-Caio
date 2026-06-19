@@ -1,26 +1,16 @@
-import csv
-import json
 from pathlib import Path
 
-from artifact_naming import CAMPOS_CSV_RESULTADOS
+from calculate_metrics import gerar_arquivos_metricas
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def formatar_valor_csv(valor):
-    if isinstance(valor, bool):
-        return str(valor).lower()
-
-    return valor
-
-
 def gerar_resumo():
     """
-    Gera um CSV resumido a partir do arquivo outputs/resultados/execucoes.json.
+    Gera CSVs e métricas a partir do arquivo outputs/resultados/execucoes.json.
     """
 
     resultados_path = ROOT / "outputs" / "resultados" / "execucoes.json"
-    csv_path = ROOT / "outputs" / "resultados" / "execucoes.csv"
 
     if not resultados_path.exists():
         raise FileNotFoundError(
@@ -28,21 +18,9 @@ def gerar_resumo():
             "Execute primeiro: python scripts/run_pipeline.py"
         )
 
-    dados = json.loads(resultados_path.read_text(encoding="utf-8"))
+    gerar_arquivos_metricas(resultados_path=resultados_path)
 
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with csv_path.open("w", newline="", encoding="utf-8") as arquivo_csv:
-        writer = csv.DictWriter(arquivo_csv, fieldnames=CAMPOS_CSV_RESULTADOS)
-        writer.writeheader()
-
-        for item in dados:
-            writer.writerow({
-                campo: formatar_valor_csv(item.get(campo, ""))
-                for campo in CAMPOS_CSV_RESULTADOS
-            })
-
-    print(f"Resumo CSV salvo em: {csv_path}")
+    print(f"Resumo e métricas salvos em: {ROOT / 'outputs' / 'resultados'}")
 
 
 if __name__ == "__main__":
