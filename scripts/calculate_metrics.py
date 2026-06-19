@@ -129,6 +129,7 @@ def ler_resultado_testes(caminho, valor_fallback=None):
 
 def avaliar_tentativa(tentativa):
     resultado = dict(tentativa)
+    resultado.pop("arquivo_resultado", None)
 
     arquivo_sast_antes = (
         resultado.get("arquivo_sast_antes")
@@ -277,21 +278,6 @@ def salvar_csv(caminho, linhas, campos):
             })
 
 
-def salvar_resultados_individuais(tentativas):
-    for tentativa in tentativas:
-        caminho = normalizar_caminho(tentativa.get("arquivo_resultado"))
-
-        if caminho is None:
-            continue
-
-        try:
-            salvar_json(caminho, tentativa)
-        except OSError as erro:
-            tentativa.setdefault("erros_metricas", []).append(
-                f"Erro ao salvar resultado individual {caminho}: {erro}"
-            )
-
-
 def gerar_arquivos_metricas(resultados_path=None, output_dir=None):
     resultados_path = normalizar_caminho(
         resultados_path or ROOT / "outputs" / "resultados" / "execucoes.json"
@@ -317,7 +303,6 @@ def gerar_arquivos_metricas(resultados_path=None, output_dir=None):
     metricas_por_prompt = agrupar_metricas(tentativas, ["prompt"])
     metricas_por_caso = agrupar_metricas(tentativas, ["caso_id", "owasp", "vulnerabilidade"])
 
-    salvar_resultados_individuais(tentativas)
     salvar_json(output_dir / "execucoes.json", tentativas)
     salvar_csv(output_dir / "execucoes.csv", tentativas, CAMPOS_CSV_RESULTADOS)
     salvar_json(output_dir / "metricas.json", metricas)

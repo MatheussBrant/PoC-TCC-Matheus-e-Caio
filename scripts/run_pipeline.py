@@ -222,15 +222,6 @@ def main():
                 output_path=teste_path
             )
 
-            resultado_path = gerar_caminho_output(
-                caso_id=caso_id,
-                prompt_id=prompt_id,
-                execucao=execucao,
-                artefato="resultado",
-                extensao="json",
-                pasta="resultados",
-            )
-
             resultado = {
                 "caso_id": caso_id,
                 "nome_caso": caso["nome"],
@@ -246,17 +237,9 @@ def main():
                 "arquivo_sast_antes": str(bandit_antes_path),
                 "arquivo_sast_depois": str(bandit_depois_path),
                 "arquivo_testes": str(teste_path),
-                "arquivo_resultado": str(resultado_path),
             }
 
             resultado = avaliar_tentativa(resultado)
-
-            resultado_path.parent.mkdir(parents=True, exist_ok=True)
-
-            resultado_path.write_text(
-                json.dumps(resultado, ensure_ascii=False, indent=2),
-                encoding="utf-8"
-            )
 
             resultados.append(resultado)
 
