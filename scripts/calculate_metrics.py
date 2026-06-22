@@ -167,10 +167,15 @@ def avaliar_tentativa(tentativa):
     )
     novas_issues_introduzidas = bool(novas_issues)
     sem_novas_issues = bandit_valido and not novas_issues_introduzidas
+    criterio_issue_atendido = (
+        issue_sumiu
+        or (bandit_valido and not issue_detectada_antes)
+    )
 
     s_i = int(issue_sumiu)
     t_i = int(testes_passaram)
     n_i = int(sem_novas_issues)
+    correcao_adequada = bool(criterio_issue_atendido and t_i and n_i)
 
     resultado.update({
         "arquivo_sast_antes": str(arquivo_sast_antes or ""),
@@ -188,7 +193,7 @@ def avaliar_tentativa(tentativa):
         "S_i": s_i,
         "T_i": t_i,
         "N_i": n_i,
-        "correcao_adequada": bool(s_i and t_i and n_i),
+        "correcao_adequada": correcao_adequada,
         "avaliacao_por_testes": testes_passaram,
     })
 
@@ -200,6 +205,17 @@ def avaliar_tentativa(tentativa):
         resultado.pop("erros_metricas", None)
 
     return resultado
+
+
+def tentativa_tem_correcao_adequada(tentativa):
+    if "correcao_adequada" in tentativa:
+        return bool(tentativa.get("correcao_adequada"))
+
+    return bool(
+        int(tentativa.get("S_i", 0))
+        and int(tentativa.get("T_i", 0))
+        and int(tentativa.get("N_i", 0))
+    )
 
 
 def calcular_metricas_agregadas(tentativas):
@@ -220,7 +236,7 @@ def calcular_metricas_agregadas(tentativas):
     soma_t = sum(int(item.get("T_i", 0)) for item in tentativas)
     soma_n = sum(int(item.get("N_i", 0)) for item in tentativas)
     correcoes_adequadas = sum(
-        int(item.get("S_i", 0)) * int(item.get("T_i", 0)) * int(item.get("N_i", 0))
+        int(tentativa_tem_correcao_adequada(item))
         for item in tentativas
     )
     tpf = soma_t / total
