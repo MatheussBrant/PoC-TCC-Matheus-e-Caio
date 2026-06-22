@@ -15,6 +15,7 @@ def buscar_documentos_por_aluno(aluno):
     cursor = conexao.cursor()
 
     query = "SELECT * FROM documentos_tcc WHERE aluno = ?"
+
     cursor.execute(query, (aluno,))
     resultados = cursor.fetchall()
 

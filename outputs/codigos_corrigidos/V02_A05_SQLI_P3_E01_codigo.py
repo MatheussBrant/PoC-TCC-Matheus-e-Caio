@@ -5,26 +5,24 @@ app = Flask(__name__)
 
 DATABASE = "academico.db"
 
+CONSULTAS_PERMITIDAS = {
+    ("documentos_tcc", "aluno"): "SELECT * FROM documentos_tcc WHERE aluno = ?",
+    ("documentos_tcc", "titulo"): "SELECT * FROM documentos_tcc WHERE titulo = ?",
+}
 
 def obter_conexao():
     return sqlite3.connect(DATABASE)
 
 
 def buscar_registros(tabela, campo, valor):
+    if (tabela, campo) not in CONSULTAS_PERMITIDAS:
+        raise ValueError(f"Combinação de tabela e campo não permitida: {tabela}.{campo}")
+
+    query = CONSULTAS_PERMITIDAS[(tabela, campo)]
+
     conexao = obter_conexao()
     cursor = conexao.cursor()
 
-    # Validação simples dos nomes da tabela e do campo para evitar SQL Injection
-    allowed_tables = ["documentos_tcc", "outra_tabela"]
-    allowed_columns = ["titulo", "autor", "ano"]
-
-    if tabela not in allowed_tables:
-        raise ValueError("Tabela não permitida")
-    if campo not in allowed_columns:
-        raise ValueError("Campo não permitido")
-
-    # Query parametrizada para evitar injeção
-    query = f"SELECT * FROM {tabela} WHERE {campo} = ?"
     cursor.execute(query, (valor,))
     resultados = cursor.fetchall()
 

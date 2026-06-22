@@ -1,6 +1,6 @@
 {
   "errors": [],
-  "generated_at": "2026-06-19T06:28:58Z",
+  "generated_at": "2026-06-22T19:59:45Z",
   "metrics": {
     "/home/matheus-brant/Desktop/repoc/PoC-TCC-Matheus-e-Caio/vulneraveis/V03_idor_bola.py": {
       "CONFIDENCE.HIGH": 0,

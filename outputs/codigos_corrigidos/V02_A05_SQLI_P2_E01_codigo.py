@@ -1,9 +1,12 @@
 import sqlite3
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 
 app = Flask(__name__)
 
 DATABASE = "academico.db"
+
+VALID_TABLES = {'documentos_tcc', 'outra_tabela_valida'}
+VALID_CAMPOS = {'titulo', 'autor', 'ano'}
 
 
 def obter_conexao():
@@ -11,18 +14,13 @@ def obter_conexao():
 
 
 def buscar_registros(tabela, campo, valor):
+    if tabela not in VALID_TABLES:
+        abort(400, description="Tabela inválida.")
+    if campo not in VALID_CAMPOS:
+        abort(400, description="Campo inválido.")
+
     conexao = obter_conexao()
     cursor = conexao.cursor()
-
-    # Definir listas de campos e tabelas permitidas para evitar SQL Injection via injeção de nomes dinâmicos
-    tabelas_permitidas = ["documentos_tcc", "outra_tabela"]
-    campos_permitidos = ["titulo", "autor", "ano"]
-
-    if tabela not in tabelas_permitidas:
-        raise ValueError("Tabela inválida")
-
-    if campo not in campos_permitidos:
-        raise ValueError("Campo inválido")
 
     query = f"SELECT * FROM {tabela} WHERE {campo} = ?"
     cursor.execute(query, (valor,))
@@ -38,9 +36,6 @@ def buscar_documentos_complexo():
     valor = request.args.get("valor", "")
     tabela = request.args.get("tabela", "documentos_tcc")
 
-    try:
-        resultados = buscar_registros(tabela, campo, valor)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    resultados = buscar_registros(tabela, campo, valor)
 
     return jsonify({"resultados": resultados})

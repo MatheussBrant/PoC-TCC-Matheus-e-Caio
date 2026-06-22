@@ -5,29 +5,32 @@ app = Flask(__name__)
 
 DATABASE = "academico.db"
 
+
 CONSULTAS_PERMITIDAS = {
     ("documentos_tcc", "aluno"): "SELECT * FROM documentos_tcc WHERE aluno = ?",
     ("documentos_tcc", "titulo"): "SELECT * FROM documentos_tcc WHERE titulo = ?",
 }
 
+
 def obter_conexao():
     return sqlite3.connect(DATABASE)
 
+
 def buscar_registros(tabela, campo, valor):
-    # Validação estrita da tabela e do campo
     if (tabela, campo) not in CONSULTAS_PERMITIDAS:
-        raise ValueError(f"Combinação de tabela '{tabela}' e campo '{campo}' não permitida.")
+        raise ValueError(f"Parâmetros inválidos: tabela '{tabela}' ou campo '{campo}' não permitidos.")
 
     query = CONSULTAS_PERMITIDAS[(tabela, campo)]
 
     conexao = obter_conexao()
     cursor = conexao.cursor()
 
-    cursor.execute(query, (valor,))  # Parametrização segura do valor
+    cursor.execute(query, (valor,))
     resultados = cursor.fetchall()
 
     conexao.close()
     return resultados
+
 
 @app.route("/documentos/buscar-complexo")
 def buscar_documentos_complexo():

@@ -1,9 +1,9 @@
 {
   "total_tentativas": 12,
-  "tcbs": 0.4167,
-  "tri": 0.4167,
-  "tpf": 0.5,
+  "tcbs": 0.6667,
+  "tri": 0.5,
+  "tpf": 0.6667,
   "tnini": 1.0,
-  "tff": 0.5,
-  "correcoes_adequadas": 5
+  "tff": 0.3333,
+  "correcoes_adequadas": 8
 }

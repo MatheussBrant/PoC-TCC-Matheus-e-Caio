@@ -47,6 +47,12 @@ def buscar_documento(documento_id):
     return DOCUMENTOS.get(documento_id)
 
 
+def usuario_possui_acesso(usuario, documento_id):
+    if usuario["perfil"] in ["professor", "coordenador"]:
+        return True
+    vinculos_usuario = VINCULOS.get(usuario["id"], [])
+    return documento_id in vinculos_usuario
+
 @app.route("/documentos/<documento_id>")
 def visualizar_documento(documento_id):
     usuario = obter_usuario_logado()
@@ -59,14 +65,7 @@ def visualizar_documento(documento_id):
     if documento is None:
         return jsonify({"erro": "Documento não encontrado"}), 404
 
-    # Verificação de permissão
-    if documento["visibilidade"] == "restrita":
-        # Usuários com perfil professor ou coordenador têm acesso
-        if usuario["perfil"] in ["professor", "coordenador"]:
-            return jsonify(documento)
-        # Alunos só têm acesso se estiverem vinculados ao documento
-        vinculos_usuario = VINCULOS.get(usuario["id"], [])
-        if documento_id not in vinculos_usuario:
-            return jsonify({"erro": "Acesso negado: usuário não autorizado a visualizar este documento"}), 403
+    if documento["visibilidade"] == "restrita" and not usuario_possui_acesso(usuario, documento_id):
+        return jsonify({"erro": "Acesso não autorizado ao documento"}), 403
 
     return jsonify(documento)

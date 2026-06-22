@@ -47,18 +47,15 @@ def buscar_documento(documento_id):
     return DOCUMENTOS.get(documento_id)
 
 
-def usuario_tem_acesso(usuario, documento_id):
-    # Coordenadores têm acesso a todos os documentos
+def usuario_pode_acessar_documento(usuario, documento_id):
     if usuario["perfil"] == "coordenador":
         return True
-    # Alunos só podem acessar documentos que estão em seus vínculos
     elif usuario["perfil"] == "aluno":
-        vinculos_usuario = VINCULOS.get(usuario["id"], [])
-        return documento_id in vinculos_usuario
-    # Professores não possuem acesso automático a documentos
+        return documento_id in VINCULOS.get(usuario["id"], [])
     elif usuario["perfil"] == "professor":
+        # Professores não têm acesso automático a documentos;
+        # ajuste conforme regras adicionais aqui (exemplo: nenhum acesso)
         return False
-    # Caso perfil não mapeado, negar acesso
     return False
 
 
@@ -74,7 +71,7 @@ def visualizar_documento(documento_id):
     if documento is None:
         return jsonify({"erro": "Documento não encontrado"}), 404
 
-    if not usuario_tem_acesso(usuario, documento_id):
-        return jsonify({"erro": "Acesso negado"}), 403
+    if not usuario_pode_acessar_documento(usuario, documento_id):
+        return jsonify({"erro": "Usuário não autorizado a acessar este documento"}), 403
 
     return jsonify(documento)
