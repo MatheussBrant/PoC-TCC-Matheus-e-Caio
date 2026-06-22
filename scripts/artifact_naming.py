@@ -51,7 +51,6 @@ CAMPOS_CSV_RESULTADOS = [
     "issue_sumiu",
     "testes_passaram",
     "novas_issues_introduzidas",
-    "sem_novas_issues",
     "S_i",
     "T_i",
     "N_i",
