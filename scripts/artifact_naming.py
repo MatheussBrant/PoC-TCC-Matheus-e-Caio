@@ -36,8 +36,8 @@ CASOS = {
 PROMPTS = {
     "P1_simples": "P1",
     "P2_raciocinio_guiado": "P2",
-    "P3_sast": "P3",
-    "P4_contexto_sast": "P4",
+    "P3_rag": "P3",
+    "P4_rag_raciocinio_guiado": "P4",
 }
 
 

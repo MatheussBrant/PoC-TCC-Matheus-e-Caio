@@ -14,8 +14,8 @@ from openai_client import chamar_openai
 from prompt_builder import (
     montar_prompt_simples,
     montar_prompt_raciocinio_guiado,
-    montar_prompt_sast,
-    montar_prompt_contexto_sast,
+    montar_prompt_rag,
+    montar_prompt_rag_raciocinio_guiado,
 )
 from bandit_client import (
     executar_bandit,
@@ -149,8 +149,12 @@ def main():
         prompts = {
             "P1_simples": montar_prompt_simples(codigo_vulneravel),
             "P2_raciocinio_guiado": montar_prompt_raciocinio_guiado(codigo_vulneravel),
-            "P3_sast": montar_prompt_sast(codigo_vulneravel, issue_sast),
-            "P4_contexto_sast": montar_prompt_contexto_sast(codigo_vulneravel, issue_sast, contexto),
+            "P3_rag": montar_prompt_rag(codigo_vulneravel, issue_sast, contexto),
+            "P4_rag_raciocinio_guiado": montar_prompt_rag_raciocinio_guiado(
+                codigo_vulneravel,
+                issue_sast,
+                contexto,
+            ),
         }
 
         for prompt_original, prompt in prompts.items():

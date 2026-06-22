@@ -49,25 +49,39 @@ Código vulnerável:
 """
 
 
-def montar_prompt_sast(codigo: str, issue_sast: dict) -> str:
+def formatar_issue_sast(issue_sast: dict) -> str:
     return f"""
-A ferramenta SAST identificou o seguinte problema no código:
-
 Tipo: {issue_sast.get("tipo", "")}
 Severidade: {issue_sast.get("severidade", "")}
 Arquivo: {issue_sast.get("arquivo", "")}
 Linha: {issue_sast.get("linha", "")}
 Mensagem: {issue_sast.get("mensagem", "")}
 Regra: {issue_sast.get("regra", "")}
+""".strip()
 
-Com base nessa recomendação da ferramenta SAST, corrija o código abaixo.
+
+def montar_prompt_rag(codigo: str, issue_sast: dict, contexto: str) -> str:
+    return f"""
+Você é um assistente especializado em correção segura de código.
+
+Use o contexto recuperado por RAG e o achado da ferramenta SAST para corrigir a vulnerabilidade.
+
+Achado SAST:
+{formatar_issue_sast(issue_sast)}
+
+Contexto recuperado por RAG:
+{contexto}
+
+Tarefa:
+Corrija o código abaixo considerando o contexto recuperado e o achado SAST.
 
 Responda apenas em JSON válido com os campos:
 {{
 "vulnerabilidade": "",
 "explicacao": "",
 "codigo_corrigido": "",
-"justificativa": ""
+"justificativa": "",
+"cuidados_adicionais": ""
 }}
 
 Código vulnerável:
@@ -79,29 +93,32 @@ Código vulnerável:
 """
 
 
-def montar_prompt_contexto_sast(codigo: str, issue_sast: dict, contexto: str) -> str:
+def montar_prompt_rag_raciocinio_guiado(codigo: str, issue_sast: dict, contexto: str) -> str:
     return f"""
 Você é um assistente especializado em correção segura de código.
 
-A ferramenta SAST identificou o seguinte problema:
+Use o contexto recuperado por RAG e o achado da ferramenta SAST para corrigir a vulnerabilidade.
 
-Tipo: {issue_sast.get("tipo", "")}
-Severidade: {issue_sast.get("severidade", "")}
-Arquivo: {issue_sast.get("arquivo", "")}
-Linha: {issue_sast.get("linha", "")}
-Mensagem: {issue_sast.get("mensagem", "")}
-Regra: {issue_sast.get("regra", "")}
+Achado SAST:
+{formatar_issue_sast(issue_sast)}
 
-Contexto adicional:
+Contexto recuperado por RAG:
 {contexto}
 
-Tarefa:
-Corrija o código abaixo considerando a recomendação SAST e o contexto adicional.
+Analise o trecho de código abaixo seguindo estas etapas:
+
+1. Identifique a vulnerabilidade com base no código, no contexto recuperado e no achado SAST.
+2. Explique a causa da vulnerabilidade.
+3. Descreva o impacto de segurança.
+4. Gere uma versão corrigida do código.
+5. Justifique por que a correção remove a vulnerabilidade.
+6. Informe possíveis cuidados adicionais.
 
 Responda apenas em JSON válido com os campos:
 {{
 "vulnerabilidade": "",
-"explicacao": "",
+"causa": "",
+"impacto": "",
 "codigo_corrigido": "",
 "justificativa": "",
 "cuidados_adicionais": ""
