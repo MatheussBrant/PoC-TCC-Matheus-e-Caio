@@ -76,6 +76,15 @@ O pipeline executa:
 8. Cálculo das métricas
 ```
 
+Estratégias de prompt:
+
+```text
+P1 = prompt simples
+P2 = raciocínio guiado
+P3 = RAG com contexto recuperado e achado SAST
+P4 = RAG com contexto recuperado, achado SAST e raciocínio guiado
+```
+
 ## Regerar CSVs e métricas sem chamar a LLM
 
 Quando `outputs/resultados/execucoes.json` já existir, gere novamente os CSVs e as métricas com:
@@ -129,8 +138,13 @@ N_i = 1 se nenhuma nova issue foi introduzida
 A correção adequada é:
 
 ```text
-correcao_adequada = S_i and T_i and N_i
+correcao_adequada = (issue_sumiu ou nao_havia_issue_inicial) and T_i and N_i
 ```
+
+Quando o Bandit não detecta issue antes da correção, a correção pode ser
+considerada adequada pelos testes automatizados, desde que eles passem e nenhuma
+nova issue seja introduzida. Nesses casos, `S_i` permanece `0`, pois não havia
+issue SAST inicial a remover, mas `correcao_adequada` pode ser `true`.
 
 Métricas agregadas:
 
