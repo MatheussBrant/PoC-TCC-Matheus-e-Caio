@@ -15,7 +15,7 @@ CAMPOS_ASSINATURA_ISSUE = (
 
 CAMPOS_METRICAS_GERAIS = [
     "total_tentativas",
-    "tcbs",
+    "trv",
     "tri",
     "tpf",
     "tnini",
@@ -224,7 +224,7 @@ def calcular_metricas_agregadas(tentativas):
     if total == 0:
         return {
             "total_tentativas": 0,
-            "tcbs": 0.0,
+            "trv": 0.0,
             "tri": 0.0,
             "tpf": 0.0,
             "tnini": 0.0,
@@ -243,7 +243,7 @@ def calcular_metricas_agregadas(tentativas):
 
     return {
         "total_tentativas": total,
-        "tcbs": round(correcoes_adequadas / total, 4),
+        "trv": round(correcoes_adequadas / total, 4),
         "tri": round(soma_s / total, 4),
         "tpf": round(tpf, 4),
         "tnini": round(soma_n / total, 4),
@@ -339,7 +339,7 @@ def gerar_arquivos_metricas(resultados_path=None, output_dir=None):
 def imprimir_resumo_metricas(metricas):
     print(
         "Métricas gerais: "
-        f"TCBS={metricas['tcbs']}, "
+        f"TRV={metricas['trv']}, "
         f"TRI={metricas['tri']}, "
         f"TPF={metricas['tpf']}, "
         f"TNINI={metricas['tnini']}, "

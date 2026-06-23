@@ -149,14 +149,14 @@ issue SAST inicial a remover, mas `correcao_adequada` pode ser `true`.
 Métricas agregadas:
 
 ```text
-TCBS  = Taxa de Correção Bem-Sucedida
+TRV   = Taxa de Remediação de Vulnerabilidades
 TRI   = Taxa de Remoção de Issues
 TPF   = Taxa de Preservação Funcional
 TNINI = Taxa de Não Introdução de Novas Issues
 TFF   = Taxa de Falha Funcional
 ```
 
-Todas variam entre `0` e `1`. Para `TCBS`, `TRI`, `TPF` e `TNINI`, quanto maior, melhor. Para `TFF`, quanto menor, melhor.
+Todas variam entre `0` e `1`. Para `TRV`, `TRI`, `TPF` e `TNINI`, quanto maior, melhor. Para `TFF`, quanto menor, melhor.
 
 ## Scripts principais
 
